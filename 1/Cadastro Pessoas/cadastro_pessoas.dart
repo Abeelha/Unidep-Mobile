@@ -104,8 +104,11 @@ class CadastroPessoa {
   }
 
   Pessoa? encontrarPessoaPorCPF(String cpf) {
-    return pessoas.firstWhere((pessoa) => pessoa.cpf == cpf,
-        orElse: () => null);
+    try {
+      return pessoas.firstWhere((pessoa) => pessoa.cpf == cpf);
+    } catch (e) {
+      return null;
+    }
   }
 
   void listarPessoas() {
