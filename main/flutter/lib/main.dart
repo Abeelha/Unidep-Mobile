@@ -122,14 +122,12 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           FloatingActionButton(
             onPressed: _contarAumentar,
-            onHold: _contarAumentar,
             tooltip: 'Aumentar',
             child: const Icon(Icons.add),
           ),
           SizedBox(height: 8), // Espaçamento entre os botões
           FloatingActionButton(
             onPressed: _contarDiminuir,
-            onHold: _contarDiminuir,
             tooltip: 'Diminuir',
             child: const Icon(Icons.remove),
           ),
