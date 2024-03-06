@@ -1,8 +1,0 @@
-Clientes:
-Cliente: Nome: theo2, Email: theo2@email.com
-
-Produtos:
-
-Estoque:
-
-Total de Vendas: 0.0
