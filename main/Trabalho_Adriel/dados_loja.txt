@@ -1,0 +1,11 @@
+Clientes:
+Cliente: Nome: asdasd, Email: 11111
+
+Produtos:
+Produto: Nome: 123, Preço: 123.0, Quantidade: 1
+
+Estoque:
+Produto: 123, Quantidade: 1
+
+Histórico de Compras:
+

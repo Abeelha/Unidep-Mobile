@@ -87,6 +87,40 @@ class Loja {
     }
   }
 
+  void carregarDados(String nomeArquivo) {
+    File arquivo = File(nomeArquivo);
+    if (!arquivo.existsSync()) {
+      print('Arquivo não encontrado.');
+      return;
+    }
+
+    var linhas = arquivo.readAsLinesSync();
+
+    List<Cliente> clientesCarregados = [];
+    List<Produto> produtosCarregados = [];
+
+    for (var linha in linhas) {
+      if (linha.startsWith('Cliente:')) {
+        var dados = linha.split(', ');
+        var nome = dados[0].split(': ')[1];
+        var email = dados[1].split(': ')[1];
+        clientesCarregados.add(Cliente(nome, email));
+      } else if (linha.startsWith('Produto:')) {
+        var dados = linha.split(', ');
+        var nome = dados[0].split(': ')[1];
+        var preco = double.parse(dados[1].split(': ')[1]);
+        var quantidade = int.parse(dados[2].split(': ')[1]);
+        produtosCarregados.add(Produto(nome, preco, quantidade));
+      }
+    }
+
+    // Atualizar a lista de clientes e produtos da loja com os dados carregados
+    clientes = clientesCarregados;
+    produtos = produtosCarregados;
+
+    print('Dados carregados com sucesso do arquivo: $nomeArquivo');
+  }
+
   void efetuarCompra(int indiceCliente, int indiceProduto) {
     if (indiceCliente < 0 || indiceCliente >= clientes.length) {
       print('Índice de cliente inválido.');
@@ -189,6 +223,7 @@ class Loja {
           stdout.write('Email do cliente: ');
           var email = stdin.readLineSync() ?? '';
           adicionarCliente(nome, email);
+          salvarDados('dados_loja.txt');
           break;
         case '2':
           visualizarClientes();
@@ -200,6 +235,7 @@ class Loja {
             stdout.write('Novo email do cliente: ');
             var novoEmail = stdin.readLineSync() ?? '';
             editarCliente(clientes[indice].email, novoNome, novoEmail);
+            salvarDados('dados_loja.txt');
           } else {
             print('Índice inválido.');
           }
@@ -210,6 +246,7 @@ class Loja {
           var indice = int.tryParse(stdin.readLineSync() ?? '') ?? -1;
           if (indice >= 0 && indice < clientes.length) {
             deletarCliente(clientes[indice].email);
+            salvarDados('dados_loja.txt');
           } else {
             print('Índice inválido.');
           }
@@ -251,6 +288,7 @@ class Loja {
           stdout.write('Quantidade do produto: ');
           var quantidade = int.tryParse(stdin.readLineSync() ?? '') ?? 0;
           adicionarProduto(nome, preco, quantidade);
+          salvarDados('dados_loja.txt');
           break;
         case '2':
           visualizarProdutos();
@@ -262,6 +300,7 @@ class Loja {
             stdout.write('Nova quantidade do produto: ');
             var novaQuantidade = int.tryParse(stdin.readLineSync() ?? '') ?? 0;
             editarProduto(produtos[indice].nome, novoPreco, novaQuantidade);
+            salvarDados('dados_loja.txt');
           } else {
             print('Índice inválido.');
           }
@@ -272,6 +311,7 @@ class Loja {
           var indice = int.tryParse(stdin.readLineSync() ?? '') ?? -1;
           if (indice >= 0 && indice < produtos.length) {
             deletarProduto(produtos[indice].nome);
+            salvarDados('dados_loja.txt');
           } else {
             print('Índice inválido.');
           }
@@ -295,10 +335,12 @@ class Loja {
     var opcao;
     do {
       limparTerminal();
+      // Carregar os dados dos clientes e produtos do arquivo
+      carregarDados('dados_loja.txt');
       print('Menu de Compras:');
-      print('Clientes:');
       visualizarClientes();
-      print('Produtos:');
+      visualizarProdutos();
+      visualizarClientes();
       visualizarProdutos();
       print('Selecione o cliente e o produto para fazer a compra.');
       print(
@@ -317,6 +359,7 @@ class Loja {
               indiceProduto >= 0 &&
               indiceProduto < produtos.length) {
             efetuarCompra(indiceCliente, indiceProduto);
+            salvarDados('dados_loja.txt');
           } else {
             print('Índice de cliente ou produto inválido.');
           }
