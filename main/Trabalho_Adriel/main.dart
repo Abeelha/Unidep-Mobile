@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:io';
 
 class Cliente {
   String nome;
@@ -72,6 +73,39 @@ class Loja {
   void relatorioTotalVendas() {
     print('Total de Vendas: $totalVendas');
   }
+
+  void salvarDados(String nomeArquivo) {
+    File arquivo = File(nomeArquivo);
+    var dados = StringBuffer();
+
+    // Escrever dados dos clientes
+    dados.writeln('Clientes:');
+    for (var cliente in clientes) {
+      dados.writeln('Nome: ${cliente.nome}, Email: ${cliente.email}');
+    }
+    dados.writeln();
+
+    // Escrever dados dos produtos
+    dados.writeln('Produtos:');
+    for (var produto in produtos) {
+      dados.writeln(
+          'Nome: ${produto.nome}, Preço: ${produto.preco}, Quantidade: ${produto.quantidade}');
+    }
+    dados.writeln();
+
+    // Escrever dados do estoque
+    dados.writeln('Estoque:');
+    estoque.forEach((nome, quantidade) {
+      dados.writeln('Produto: $nome, Quantidade: $quantidade');
+    });
+    dados.writeln();
+
+    // Escrever total de vendas
+    dados.writeln('Total de Vendas: $totalVendas');
+
+    arquivo.writeAsStringSync(dados.toString());
+    print('Dados salvos com sucesso no arquivo: $nomeArquivo');
+  }
 }
 
 void main() {
@@ -89,4 +123,7 @@ void main() {
 
   loja.relatorioClientes();
   loja.relatorioTotalVendas();
+
+  // Salvando os dados em um arquivo
+  loja.salvarDados('dados_loja.txt');
 }

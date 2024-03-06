@@ -1,0 +1,13 @@
+Clientes:
+Nome: Adriel, Email: adriel@example.com
+Nome: Theo, Email: theo@example.com
+
+Produtos:
+Nome: Cadeira Gamer A, Preço: 500.0, Quantidade: 10
+Nome: Cadeira Gamer B, Preço: 600.0, Quantidade: 15
+
+Estoque:
+Produto: Cadeira Gamer A, Quantidade: 7
+Produto: Cadeira Gamer B, Quantidade: 13
+
+Total de Vendas: 2700.0
