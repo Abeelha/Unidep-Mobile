@@ -6,6 +6,7 @@ class Cliente {
 
   Cliente(this.nome, this.email);
 
+  @override
   String toString() => 'Nome: $nome, Email: $email';
 }
 
@@ -16,6 +17,7 @@ class Produto {
 
   Produto(this.nome, this.preco, this.quantidade);
 
+  @override
   String toString() => 'Nome: $nome, Preço: $preco, Quantidade: $quantidade';
 }
 
@@ -25,7 +27,8 @@ class Compra {
 
   Compra(this.cliente, this.produto);
 
-  String toString() => '${cliente.nome} comprou ${produto.nome}';
+  @override
+  String toString() => '${cliente}, ${produto}';
 }
 
 class Loja {
@@ -34,8 +37,80 @@ class Loja {
   Map<String, int> estoque = {};
   List<Compra> historicoCompras = [];
 
-  void limparTerminal() {
-    print("\x1B[2J\x1B[0;0H");
+  void salvarDados(String nomeArquivo) {
+    var arquivo = File(nomeArquivo);
+    var dados = StringBuffer();
+
+    // Escrever dados dos clientes
+    dados.writeln('Clientes:');
+    for (var cliente in clientes) {
+      dados.writeln('${cliente.nome},${cliente.email}');
+    }
+    dados.writeln();
+
+    // Escrever dados dos produtos
+    dados.writeln('Produtos:');
+    for (var produto in produtos) {
+      dados.writeln('${produto.nome},${produto.preco},${produto.quantidade}');
+    }
+    dados.writeln();
+
+    // Escrever dados do estoque
+    dados.writeln('Estoque:');
+    estoque.forEach((nome, quantidade) {
+      dados.writeln('$nome,$quantidade');
+    });
+    dados.writeln();
+
+    // Escrever histórico de compras
+    dados.writeln('Histórico de Compras:');
+    for (var compra in historicoCompras) {
+      dados.writeln('${compra.cliente.nome},${compra.produto.nome}');
+    }
+    dados.writeln();
+
+    arquivo.writeAsStringSync(dados.toString());
+    print('Dados salvos com sucesso no arquivo: $nomeArquivo');
+  }
+
+  void carregarDados(String nomeArquivo) {
+    File arquivo = File(nomeArquivo);
+    if (!arquivo.existsSync()) {
+      print('Arquivo não encontrado.');
+      return;
+    }
+
+    var linhas = arquivo.readAsLinesSync();
+    String? secao;
+
+    for (var linha in linhas) {
+      if (linha.isEmpty) continue;
+
+      if (linha.endsWith(':')) {
+        secao = linha;
+        continue;
+      }
+
+      var campos = linha.split(',');
+      switch (secao) {
+        case 'Clientes:':
+          clientes.add(Cliente(campos[0], campos[1]));
+          break;
+        case 'Produtos:':
+          produtos.add(Produto(
+              campos[0], double.parse(campos[1]), int.parse(campos[2])));
+          break;
+        case 'Estoque:':
+          estoque[campos[0]] = int.parse(campos[1]);
+          break;
+        case 'Histórico de Compras:':
+          var cliente = clientes.firstWhere((c) => c.nome == campos[0]);
+          var produto = produtos.firstWhere((p) => p.nome == campos[1]);
+          historicoCompras.add(Compra(cliente, produto));
+          break;
+      }
+    }
+    print('Dados carregados com sucesso do arquivo: $nomeArquivo');
   }
 
   void adicionarCliente(String nome, String email) {
@@ -57,7 +132,9 @@ class Loja {
       print('Não há clientes cadastrados.');
     } else {
       print('Clientes:');
-      clientes.forEach(print);
+      for (var cliente in clientes) {
+        print(cliente);
+      }
     }
   }
 
@@ -83,42 +160,10 @@ class Loja {
       print('Não há produtos cadastrados.');
     } else {
       print('Produtos:');
-      produtos.forEach(print);
-    }
-  }
-
-  void carregarDados(String nomeArquivo) {
-    File arquivo = File(nomeArquivo);
-    if (!arquivo.existsSync()) {
-      print('Arquivo não encontrado.');
-      return;
-    }
-
-    var linhas = arquivo.readAsLinesSync();
-
-    List<Cliente> clientesCarregados = [];
-    List<Produto> produtosCarregados = [];
-
-    for (var linha in linhas) {
-      if (linha.startsWith('Cliente:')) {
-        var dados = linha.split(', ');
-        var nome = dados[0].split(': ')[1];
-        var email = dados[1].split(': ')[1];
-        clientesCarregados.add(Cliente(nome, email));
-      } else if (linha.startsWith('Produto:')) {
-        var dados = linha.split(', ');
-        var nome = dados[0].split(': ')[1];
-        var preco = double.parse(dados[1].split(': ')[1]);
-        var quantidade = int.parse(dados[2].split(': ')[1]);
-        produtosCarregados.add(Produto(nome, preco, quantidade));
+      for (var produto in produtos) {
+        print(produto);
       }
     }
-
-    // Atualizar a lista de clientes e produtos da loja com os dados carregados
-    clientes = clientesCarregados;
-    produtos = produtosCarregados;
-
-    print('Dados carregados com sucesso do arquivo: $nomeArquivo');
   }
 
   void efetuarCompra(int indiceCliente, int indiceProduto) {
@@ -150,7 +195,9 @@ class Loja {
       print('Não há histórico de compras.');
     } else {
       print('Histórico de Compras:');
-      historicoCompras.forEach(print);
+      for (var compra in historicoCompras) {
+        print(compra);
+      }
     }
   }
 
@@ -163,44 +210,6 @@ class Loja {
         print('Produto: $nome, Quantidade: $quantidade');
       });
     }
-  }
-
-  void salvarDados(String nomeArquivo) {
-    var arquivo = File(nomeArquivo);
-    var dados = StringBuffer();
-
-    // Escrever dados dos clientes
-    dados.writeln('Clientes:');
-    for (var cliente in clientes) {
-      dados.writeln('Cliente: Nome: ${cliente.nome}, Email: ${cliente.email}');
-    }
-    dados.writeln();
-
-    // Escrever dados dos produtos
-    dados.writeln('Produtos:');
-    for (var produto in produtos) {
-      dados.writeln(
-          'Produto: Nome: ${produto.nome}, Preço: ${produto.preco}, Quantidade: ${produto.quantidade}');
-    }
-    dados.writeln();
-
-    // Escrever dados do estoque
-    dados.writeln('Estoque:');
-    estoque.forEach((nome, quantidade) {
-      dados.writeln('Produto: $nome, Quantidade: $quantidade');
-    });
-    dados.writeln();
-
-    // Escrever histórico de compras
-    dados.writeln('Histórico de Compras:');
-    for (var compra in historicoCompras) {
-      dados.writeln(
-          'Compra: Cliente: ${compra.cliente.nome}, Produto: ${compra.produto.nome}');
-    }
-    dados.writeln();
-
-    arquivo.writeAsStringSync(dados.toString());
-    print('Dados salvos com sucesso no arquivo: $nomeArquivo');
   }
 
   void menuClientes() {
@@ -336,35 +345,35 @@ class Loja {
     do {
       limparTerminal();
       // Carregar os dados dos clientes e produtos do arquivo
-      carregarDados('dados_loja.txt');
       print('Menu de Compras:');
       visualizarClientes();
       visualizarProdutos();
-      visualizarClientes();
-      visualizarProdutos();
       print('Selecione o cliente e o produto para fazer a compra.');
-      print(
-          'Para selecionar, digite o índice do cliente e do produto separados por vírgula.');
-      print('Exemplo: 1,3');
+      print('Digite o nome do cliente e do produto separados por vírgula.');
+      print('Exemplo: Theo,Cadeira');
       print('0. Voltar');
       stdout.write('Escolha uma opção: ');
       opcao = stdin.readLineSync() ?? '';
       if (opcao != '0') {
-        var indices = opcao.split(',');
-        if (indices.length == 2) {
-          var indiceCliente = int.tryParse(indices[0].trim()) ?? -1;
-          var indiceProduto = int.tryParse(indices[1].trim()) ?? -1;
-          if (indiceCliente >= 0 &&
-              indiceCliente < clientes.length &&
-              indiceProduto >= 0 &&
-              indiceProduto < produtos.length) {
-            efetuarCompra(indiceCliente, indiceProduto);
-            salvarDados('dados_loja.txt');
+        var nomes = opcao.split(',');
+        if (nomes.length == 2) {
+          var nomeCliente = nomes[0].trim();
+          var nomeProduto = nomes[1].trim();
+          var cliente = clientes.firstWhere((c) => c.nome == nomeCliente,
+              orElse: () => Cliente("", ""));
+          var produto = produtos.firstWhere((p) => p.nome == nomeProduto,
+              orElse: () => Produto("", 0.0, 0));
+          if (cliente.nome.isEmpty) {
+            print('Cliente não encontrado.');
+          } else if (produto.nome.isEmpty) {
+            print('Produto não encontrado.');
           } else {
-            print('Índice de cliente ou produto inválido.');
+            efetuarCompra(clientes.indexOf(cliente), produtos.indexOf(produto));
+            salvarDados('dados_loja.txt');
           }
         } else {
-          print('Opção inválida.');
+          print(
+              'Formato inválido. Por favor, digite o nome do cliente e do produto separados por vírgula.');
         }
         stdout.write('Pressione Enter para continuar...');
         stdin.readLineSync();
@@ -413,9 +422,14 @@ class Loja {
       }
     } while (opcao != '0');
   }
+
+  void limparTerminal() {
+    print("\x1B[2J\x1B[0;0H");
+  }
 }
 
 void main() {
   Loja loja = Loja();
+  loja.carregarDados('dados_loja.txt');
   loja.menuPrincipal();
 }

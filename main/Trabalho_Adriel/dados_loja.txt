@@ -1,11 +1,12 @@
 Clientes:
-Cliente: Nome: asdasd, Email: 11111
+Theo,theo@gmail.com
 
 Produtos:
-Produto: Nome: 123, Preço: 123.0, Quantidade: 1
+Cadeira,200.0,5
 
 Estoque:
-Produto: 123, Quantidade: 1
+Cadeira,5
 
 Histórico de Compras:
+Theo,Cadeira
 
