@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:io';
 
 class Cliente {
@@ -6,6 +5,8 @@ class Cliente {
   String email;
 
   Cliente(this.nome, this.email);
+
+  String toString() => 'Nome: $nome, Email: $email';
 }
 
 class Produto {
@@ -14,6 +15,8 @@ class Produto {
   int quantidade;
 
   Produto(this.nome, this.preco, this.quantidade);
+
+  String toString() => 'Nome: $nome, Preço: $preco, Quantidade: $quantidade';
 }
 
 class Loja {
@@ -22,56 +25,36 @@ class Loja {
   Map<String, int> estoque = {};
   double totalVendas = 0.0;
 
-  void cadastrarCliente(String nome, String email) {
-    Cliente cliente = Cliente(nome, email);
-    clientes.add(cliente);
+  void adicionarCliente(String nome, String email) {
+    clientes.add(Cliente(nome, email));
   }
 
-  Cliente buscarCliente(String email) {
-    return clientes.firstWhere((cliente) => cliente.email == email);
-  }
-
-  void deletarCliente(String email) {
-    clientes.removeWhere((cliente) => cliente.email == email);
-  }
-
-  void cadastrarProduto(String nome, double preco, int quantidade) {
-    Produto produto = Produto(nome, preco, quantidade);
-    produtos.add(produto);
-    estoque[produto.nome] = quantidade;
-  }
-
-  Produto buscarProduto(String nome) {
-    return produtos.firstWhere((produto) => produto.nome == nome);
-  }
-
-  void deletarProduto(String nome) {
-    Produto produto = buscarProduto(nome);
-    produtos.remove(produto);
-    estoque.remove(nome);
-  }
-
-  void venderProduto(String nome, int quantidade) {
-    Produto produto = buscarProduto(nome);
-    var estoqueProduto = estoque[produto.nome] ?? 0;
-    if (estoqueProduto >= quantidade) {
-      estoque[produto.nome] = estoqueProduto - quantidade;
-      totalVendas += produto.preco * quantidade;
-      print('Venda realizada com sucesso.');
-    } else {
-      print('Quantidade insuficiente em estoque.');
+  void carregarDados(String nomeArquivo) {
+    File arquivo = File(nomeArquivo);
+    if (!arquivo.existsSync()) {
+      print('Arquivo não encontrado.');
+      return;
     }
-  }
 
-  void relatorioClientes() {
-    print('Clientes Cadastrados:');
-    for (var cliente in clientes) {
-      print('Nome: ${cliente.nome}, Email: ${cliente.email}');
+    List<String> linhas = arquivo.readAsLinesSync();
+
+    for (var linha in linhas) {
+      if (linha.startsWith('Cliente:')) {
+        var dados = linha.split(', ');
+        var nome = dados[0].split(': ')[1];
+        var email = dados[1].split(': ')[1];
+        this.adicionarCliente(nome, email);
+      } else if (linha.startsWith('Produto:')) {
+        var dados = linha.split(', ');
+        var nome = dados[0].split(': ')[1];
+        var preco = double.parse(dados[1].split(': ')[1]);
+        var quantidade = int.parse(dados[2].split(': ')[1]);
+        produtos.add(Produto(nome, preco, quantidade));
+        estoque[nome] = quantidade;
+      } else if (linha.startsWith('Total de Vendas:')) {
+        totalVendas = double.parse(linha.split(': ')[1]);
+      }
     }
-  }
-
-  void relatorioTotalVendas() {
-    print('Total de Vendas: $totalVendas');
   }
 
   void salvarDados(String nomeArquivo) {
@@ -81,7 +64,7 @@ class Loja {
     // Escrever dados dos clientes
     dados.writeln('Clientes:');
     for (var cliente in clientes) {
-      dados.writeln('Nome: ${cliente.nome}, Email: ${cliente.email}');
+      dados.writeln('Cliente: Nome: ${cliente.nome}, Email: ${cliente.email}');
     }
     dados.writeln();
 
@@ -89,7 +72,7 @@ class Loja {
     dados.writeln('Produtos:');
     for (var produto in produtos) {
       dados.writeln(
-          'Nome: ${produto.nome}, Preço: ${produto.preco}, Quantidade: ${produto.quantidade}');
+          'Produto: Nome: ${produto.nome}, Preço: ${produto.preco}, Quantidade: ${produto.quantidade}');
     }
     dados.writeln();
 
@@ -106,24 +89,74 @@ class Loja {
     arquivo.writeAsStringSync(dados.toString());
     print('Dados salvos com sucesso no arquivo: $nomeArquivo');
   }
+
+  void editarCliente(String email, String novoNome, String novoEmail) {
+    var cliente = clientes.firstWhere((c) => c.email == email);
+    cliente.nome = novoNome;
+    cliente.email = novoEmail;
+  }
+
+  void deletarCliente(String email) {
+    clientes.removeWhere((cliente) => cliente.email == email);
+  }
+
+  void visualizarClientes() {
+    if (clientes.isEmpty) {
+      print('Não há clientes cadastrados.');
+    } else {
+      print('Clientes:');
+      clientes.forEach(print);
+    }
+  }
 }
 
 void main() {
   Loja loja = Loja();
+  loja.carregarDados('dados_loja.txt');
 
-  // Exemplo de uso
-  loja.cadastrarCliente('Adriel', 'adriel@example.com');
-  loja.cadastrarCliente('Theo', 'theo@example.com');
+  var opcao;
+  while (opcao != '0') {
+    print('Menu:');
+    print('1. Adicionar Cliente');
+    print('2. Editar Cliente');
+    print('3. Deletar Cliente');
+    print('4. Visualizar Clientes');
+    print('0. Sair');
+    stdout.write('Escolha uma opção: ');
+    opcao = stdin.readLineSync() ?? '';
 
-  loja.cadastrarProduto('Cadeira Gamer A', 500.0, 10);
-  loja.cadastrarProduto('Cadeira Gamer B', 600.0, 15);
-
-  loja.venderProduto('Cadeira Gamer A', 3);
-  loja.venderProduto('Cadeira Gamer B', 2);
-
-  loja.relatorioClientes();
-  loja.relatorioTotalVendas();
-
-  // Salvando os dados em um arquivo
-  loja.salvarDados('dados_loja.txt');
+    switch (opcao) {
+      case '1':
+        stdout.write('Nome do cliente: ');
+        var nome = stdin.readLineSync();
+        stdout.write('Email do cliente: ');
+        var email = stdin.readLineSync();
+        loja.adicionarCliente(nome ?? '', email ?? '');
+        break;
+      case '2':
+        stdout.write('Email do cliente a ser editado: ');
+        var emailAntigo = stdin.readLineSync() ?? '';
+        stdout.write('Novo nome do cliente: ');
+        var novoNome = stdin.readLineSync() ?? '';
+        stdout.write('Novo email do cliente: ');
+        var novoEmail = stdin.readLineSync() ?? '';
+        loja.editarCliente(emailAntigo, novoNome, novoEmail);
+        loja.salvarDados('dados_loja.txt');
+        break;
+      case '3':
+        stdout.write('Email do cliente a ser deletado: ');
+        var emailDeletar = stdin.readLineSync() ?? '';
+        loja.deletarCliente(emailDeletar);
+        loja.salvarDados('dados_loja.txt');
+        break;
+      case '4':
+        loja.visualizarClientes();
+        break;
+      case '0':
+        print('Saindo do programa...');
+        break;
+      default:
+        print('Opção inválida.');
+    }
+  }
 }
