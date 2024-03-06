@@ -18,7 +18,7 @@ class Produto {
 class Loja {
   List<Cliente> clientes = [];
   List<Produto> produtos = [];
-  Map<String, int> estoque = {}; // Mudança aqui
+  Map<String, int> estoque = {};
   double totalVendas = 0.0;
 
   void cadastrarCliente(String nome, String email) {
@@ -27,14 +27,7 @@ class Loja {
   }
 
   Cliente buscarCliente(String email) {
-    var clienteEncontrado = null;
-    try {
-      clienteEncontrado =
-          clientes.firstWhere((cliente) => cliente.email == email);
-    } catch (e) {
-      print('Ocorreu um erro ao buscar o cliente: $e');
-    }
-    return clienteEncontrado;
+    return clientes.firstWhere((cliente) => cliente.email == email);
   }
 
   void deletarCliente(String email) {
@@ -44,38 +37,28 @@ class Loja {
   void cadastrarProduto(String nome, double preco, int quantidade) {
     Produto produto = Produto(nome, preco, quantidade);
     produtos.add(produto);
-    estoque[produto.nome] = quantidade.toString(); // Convertendo para string
+    estoque[produto.nome] = quantidade;
   }
 
-  Produto? buscarProduto(String nome) {
-    try {
-      return produtos.firstWhere((produto) => produto.nome == nome);
-    } catch (e) {
-      print('Ocorreu um erro ao buscar o produto: $e');
-      return null;
-    }
+  Produto buscarProduto(String nome) {
+    return produtos.firstWhere((produto) => produto.nome == nome);
   }
 
   void deletarProduto(String nome) {
-    Produto produto = buscarProduto(nome)!; // Forçando a não ser nulo
+    Produto produto = buscarProduto(nome);
     produtos.remove(produto);
-    estoque.remove(nome); // Mudança aqui
+    estoque.remove(nome);
   }
 
   void venderProduto(String nome, int quantidade) {
-    Produto produto = buscarProduto(nome) ?? Produto('', 0.0, 0);
-    if (produto.nome.isNotEmpty) {
-      var estoqueProduto = int.parse(estoque[produto.nome]!); // Parse para int
-      if (estoqueProduto >= quantidade) {
-        estoque[produto.nome] =
-            (estoqueProduto - quantidade).toString(); // Atualiza estoque
-        totalVendas += produto.preco * quantidade;
-        print('Venda realizada com sucesso.');
-      } else {
-        print('Quantidade insuficiente em estoque.');
-      }
+    Produto produto = buscarProduto(nome);
+    var estoqueProduto = estoque[produto.nome] ?? 0;
+    if (estoqueProduto >= quantidade) {
+      estoque[produto.nome] = estoqueProduto - quantidade;
+      totalVendas += produto.preco * quantidade;
+      print('Venda realizada com sucesso.');
     } else {
-      print('Produto não encontrado.');
+      print('Quantidade insuficiente em estoque.');
     }
   }
 
