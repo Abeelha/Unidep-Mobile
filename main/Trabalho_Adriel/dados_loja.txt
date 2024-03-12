@@ -1,13 +1,18 @@
 Clientes:
 Theo,theo@gmail.com
-1,1
+Teste,teste@gmail.com
+Adriel,adriel@gmail.com
 
 Produtos:
 Cadeira,200.0,5
+Cadeira Grande,799.99,12
 
 Estoque:
-Cadeira,5
+Cadeira,4
+Cadeira Grande,11
 
 Histórico de Compras:
 Theo,Cadeira
+Adriel,Cadeira Grande
+Teste,Cadeira
 
