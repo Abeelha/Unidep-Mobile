@@ -1,13 +1,18 @@
 Clientes:
-Theo,theo@gmail.com
-1,1
+Adriel 2,adriel2@email.com
+Theo,Theo@gmail.com
+Lucas,lucas@gmail.com
 
 Produtos:
 Cadeira,200.0,5
+,0.0,0
 
 Estoque:
-Cadeira,5
+Cadeira,3
+,0
 
 Histórico de Compras:
 Theo,Cadeira
+Adriel 2,Cadeira
+Lucas,Cadeira
 
