@@ -1,4 +1,3 @@
-arquivo2.txt:
 Data, Receitas, Despesas
 06/01/2022, 7200, 4200
 07/01/2022, 6800, 3800
