@@ -1,7 +1,0 @@
-Relatório Financeiro da Empresa
-
-Período Analisado: arquivo1 - arquivo2
-
-Total de Receitas: R$ 67200.00
-Total de Despesas: R$ 39600.00
-Lucro Total: R$ 27600.00

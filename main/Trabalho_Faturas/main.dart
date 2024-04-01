@@ -4,7 +4,11 @@ import 'dart:io'; // importa o faz tudo
 //Theo Bertol
 
 Future<void> main() async {
-  List<String> files = ['arquivo1.txt', 'arquivo2.txt']; // pegando arquivos
+  List<String> files = [
+    'arquivo1.txt',
+    'arquivo2.txt',
+    'arquivo3.txt' // <--- remover esse daqui prof, adicionamos só pra brincar se funcionava com mais arquivos
+  ]; // pegando arquivos, adicionado o terceiro arquivo pra testa
   double totalReceitas = 0.0, totalDespesas = 0.0; //inicizando variaveis
 
   for (String file in files) {
