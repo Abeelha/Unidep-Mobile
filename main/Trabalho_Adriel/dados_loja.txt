@@ -1,37 +1,12 @@
 Clientes:
-<<<<<<< HEAD
-Adriel 2,adriel2@email.com
-Theo,Theo@gmail.com
-Lucas,lucas@gmail.com
+lucas,lucas@gmail.comProdutos:
+cadeira gamer[,123.0,3Estoque:
+cadeira gamer[,3
 
-Produtos:
-Cadeira,200.0,5
-,0.0,0
 
-Estoque:
-Cadeira,3
-,0
+
+
 
 Histórico de Compras:
-Theo,Cadeira
-Adriel 2,Cadeira
-Lucas,Cadeira
-=======
-Theo,theo@gmail.com
-Teste,teste@gmail.com
-Adriel,adriel@gmail.com
-
-Produtos:
-Cadeira,200.0,5
-Cadeira Grande,799.99,12
-
-Estoque:
-Cadeira,4
-Cadeira Grande,11
-
-Histórico de Compras:
-Theo,Cadeira
-Adriel,Cadeira Grande
-Teste,Cadeira
->>>>>>> 3e571dd065124a133bfbc038fb7b737804e7e1ea
+lucas,cadeira gamer[
 
